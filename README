@@ -2,47 +2,351 @@
 
 <p align="center">
   <strong>Frameora</strong><br>
-  Android photo editor focused on EXIF metadata and customizable photographic overlays.
+  <em>Turn your photos into stories.</em>
+</p>
+
+<p align="center">
+  Android photo editor focused on EXIF metadata, photographic information and customizable visual overlays.
+</p>
+
+<p align="center">
+  <img src="https://img.shields.io/badge/Kotlin-2.4.20-7F52FF?logo=kotlin&logoColor=white" alt="Kotlin">
+  <img src="https://img.shields.io/badge/Jetpack%20Compose-2026.02.01-4285F4?logo=jetpackcompose&logoColor=white" alt="Jetpack Compose">
+  <img src="https://img.shields.io/badge/Android-API%2036-3DDC84?logo=android&logoColor=white" alt="Android">
+  <img src="https://img.shields.io/badge/Architecture-Clean%20%2B%20MVVM-orange" alt="Architecture">
+  <img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License">
 </p>
 
 ---
 
 ## 📸 About
 
-Frameora is an Android application designed for photographers who want to enhance their photographs with useful photographic information without modifying the original file.
+**Frameora** is an Android application designed for photographers who want to enhance their photographs with useful photographic information while keeping the original image untouched.
 
-The project focuses on combining **photography metadata**, **visual customization** and **high-quality export** in a simple workflow.
+The project combines:
 
-The original photograph is always treated as the source. Edits are intended to generate a new file rather than overwrite the original.
+- 📷 Photography metadata
+- 🔍 EXIF information
+- 🎨 Visual customization
+- 📝 Text overlays
+- 🖼️ Photographic layouts
+- 📤 High-quality image export
+
+The goal is to provide a simple and flexible way to transform a photograph into a presentation that includes relevant photographic information such as camera, lens, focal length, aperture, shutter speed, ISO, date and GPS.
+
+Frameora follows a **non-destructive workflow**: the original photograph is treated as the source and edits are intended to generate a new file instead of overwriting the original.
+
+> **Note:** Adding visual elements to a photograph requires rendering the image and generally re-encoding the output. Therefore, pixel-level lossless preservation cannot always be guaranteed. Frameora aims to preserve available metadata and minimize unnecessary quality degradation during export.
 
 ---
 
 ## ✨ Current Features
 
-- 📷 Import photographs from the device
-- 🔍 Read EXIF metadata
-- 🖼️ Display the selected photograph
-- 🔄 Handle image orientation from EXIF
-- 📊 Display camera information
-- 🎛️ Select which metadata fields are displayed
-- 📐 Display focal length
-- 🔭 Display aperture
-- ⚡ Display shutter speed
-- 🎚️ Display ISO
-- 📅 Display capture date and time
-- 🔬 Display lens information
-- 📏 Display 35 mm equivalent focal length
-- 🔎 Display digital zoom
-- 💡 Display flash information
-- 📍 Display GPS coordinates
-- 🎨 Preview metadata below the photograph
-- 📱 Support portrait and landscape photographs
+### 📷 Photography
+
+- Import photographs from the device
+- Preview the selected photograph
+- Support portrait and landscape photographs
+- Handle image orientation using EXIF information
+
+### 🔍 EXIF Metadata
+
+Frameora currently reads and displays information including:
+
+- Camera manufacturer
+- Camera model
+- Lens manufacturer
+- Lens model
+- Focal length
+- 35 mm equivalent focal length
+- Aperture
+- Exposure time
+- ISO
+- Exposure compensation
+- Digital zoom
+- Flash
+- White balance
+- Metering mode
+- Color space
+- GPS coordinates
+- GPS date
+- GPS time
+- Capture date and time
+- Image dimensions
+- MIME type
+- EXIF orientation
+
+### 🎛️ Metadata Editor
+
+The editor allows individual metadata fields to be enabled or disabled before they are displayed in the photographic information strip.
+
+Currently available fields include:
+
+- Manufacturer
+- Camera model
+- Focal length
+- Aperture
+- Exposure time
+- ISO
+- Date
+- Lens
+- 35 mm equivalent
+- Digital zoom
+- GPS
+- Flash
+
+### 🎨 Metadata Strip
+
+Frameora provides a photographic information strip below the image.
+
+The current layout includes:
+
+```text
+CAMERA MANUFACTURER
+Camera Model
+
+24 mm  ·  f/1.8  ·  1/250 s  ·  ISO 100
+
+Lens Model
+
+27 mm equivalent
+
+Capture date
+```
+
+The information shown can be customized through the editor.
+
+---
+
+## 🏗️ Architecture
+
+Frameora follows a **Clean Architecture + MVVM** approach.
+
+The project separates domain logic from the user interface and uses `ViewModel` + `StateFlow` for UI state management.
+
+### Project Structure
+
+```text
+Frameora/
+│
+├── app/
+│   ├── build.gradle.kts
+│   ├── proguard-rules.pro
+│   │
+│   └── src/
+│       └── main/
+│           │
+│           ├── AndroidManifest.xml
+│           │
+│           ├── java/
+│           │   └── com/
+│           │       └── jairoco/
+│           │           └── frameora/
+│           │               │
+│           │               ├── MainActivity.kt
+│           │               │
+│           │               ├── domain/
+│           │               │   │
+│           │               │   ├── metadata/
+│           │               │   │   ├── ExifInspector.kt
+│           │               │   │   ├── ExifReader.kt
+│           │               │   │   └── MetadataFormatter.kt
+│           │               │   │
+│           │               │   ├── model/
+│           │               │   │   └── PhotoMetadata.kt
+│           │               │   │
+│           │               │   └── editor/
+│           │               │       └── model/
+│           │               │           ├── PhotoEdit.kt
+│           │               │           ├── FrameConfig.kt
+│           │               │           ├── TextElement.kt
+│           │               │           ├── LogoElement.kt
+│           │               │           ├── MetadataDisplayConfig.kt
+│           │               │           └── MetadataField.kt
+│           │               │
+│           │               └── ui/
+│           │                   │
+│           │                   ├── components/
+│           │                   │   ├── MetadataRow.kt
+│           │                   │   ├── MetadataSection.kt
+│           │                   │   └── PhotoPreview.kt
+│           │                   │
+│           │                   ├── editor/
+│           │                   │   ├── EditorScreen.kt
+│           │                   │   ├── EditorPreview.kt
+│           │                   │   ├── EditorUiState.kt
+│           │                   │   ├── EditorViewModel.kt
+│           │                   │   └── MetadataFieldSwitch.kt
+│           │                   │
+│           │                   ├── screen/
+│           │                   │   ├── FrameoraScreen.kt
+│           │                   │   ├── FrameoraUiState.kt
+│           │                   │   └── FrameoraViewModel.kt
+│           │                   │
+│           │                   └── theme/
+│           │                       ├── Color.kt
+│           │                       ├── Theme.kt
+│           │                       └── Type.kt
+│           │
+│           └── res/
+│
+├── gradle/
+│
+├── .gitignore
+├── build.gradle.kts
+├── gradle.properties
+├── gradlew
+├── gradlew.bat
+├── settings.gradle.kts
+│
+├── CHANGELOG.md
+├── LICENSE
+└── README.md
+```
+
+---
+
+## 🧩 Domain Layer
+
+The `domain` package contains the application's core models and metadata-related logic.
+
+### Metadata
+
+```text
+domain/metadata/
+├── ExifInspector.kt
+├── ExifReader.kt
+└── MetadataFormatter.kt
+```
+
+- `ExifReader` reads EXIF information from the selected image.
+- `ExifInspector` provides metadata inspection utilities.
+- `MetadataFormatter` converts raw metadata into user-friendly photographic values.
+
+### Models
+
+```text
+domain/model/
+└── PhotoMetadata.kt
+```
+
+`PhotoMetadata` represents the metadata extracted from a photograph.
+
+### Editor Models
+
+```text
+domain/editor/model/
+├── PhotoEdit.kt
+├── FrameConfig.kt
+├── TextElement.kt
+├── LogoElement.kt
+├── MetadataDisplayConfig.kt
+└── MetadataField.kt
+```
+
+These models represent the editing configuration and the elements that will eventually be rendered into the exported photograph.
+
+---
+
+## 🎨 UI Layer
+
+The UI is implemented using **Jetpack Compose**.
+
+### Components
+
+Reusable UI components are located in:
+
+```text
+ui/components/
+├── MetadataRow.kt
+├── MetadataSection.kt
+└── PhotoPreview.kt
+```
+
+### Editor
+
+The editor is responsible for displaying the photograph and configuring the information shown over or around it.
+
+```text
+ui/editor/
+├── EditorScreen.kt
+├── EditorPreview.kt
+├── EditorUiState.kt
+├── EditorViewModel.kt
+└── MetadataFieldSwitch.kt
+```
+
+### Main Screen
+
+```text
+ui/screen/
+├── FrameoraScreen.kt
+├── FrameoraUiState.kt
+└── FrameoraViewModel.kt
+```
+
+### Theme
+
+```text
+ui/theme/
+├── Color.kt
+├── Theme.kt
+└── Type.kt
+```
+
+---
+
+## 🛠️ Tech Stack
+
+| Technology | Purpose |
+|---|---|
+| Kotlin | Primary programming language |
+| Jetpack Compose | Declarative UI |
+| Material 3 | UI components and design system |
+| AndroidX | Android application foundation |
+| ViewModel | UI state management |
+| StateFlow | Reactive state |
+| Kotlin Coroutines | Asynchronous operations |
+| ExifInterface | EXIF metadata reading |
+| Coil | Image loading and preview |
+| Gradle | Build system |
+
+---
+
+## 📱 Metadata Support
+
+| Metadata | Status |
+|---|:---:|
+| Camera manufacturer | ✅ |
+| Camera model | ✅ |
+| Lens manufacturer | ✅ |
+| Lens model | ✅ |
+| Focal length | ✅ |
+| 35 mm equivalent | ✅ |
+| Aperture | ✅ |
+| Exposure time | ✅ |
+| ISO | ✅ |
+| Exposure compensation | ✅ |
+| Digital zoom | ✅ |
+| Flash | ✅ |
+| White balance | ✅ |
+| Metering mode | ✅ |
+| Color space | ✅ |
+| GPS coordinates | ✅ |
+| GPS date | ✅ |
+| GPS time | ✅ |
+| Capture date | ✅ |
+| Image dimensions | ✅ |
+| MIME type | ✅ |
+| EXIF orientation | ✅ |
 
 ---
 
 ## 🚧 Roadmap
 
-### Photo
+Frameora is being developed incrementally.
+
+### 📷 Photo
 
 - [x] Import photograph
 - [x] Photo preview
@@ -51,7 +355,7 @@ The original photograph is always treated as the source. Edits are intended to g
 - [ ] Crop
 - [ ] Rotation
 
-### Metadata
+### 🔍 Metadata
 
 - [x] EXIF reader
 - [x] Camera manufacturer
@@ -62,14 +366,16 @@ The original photograph is always treated as the source. Edits are intended to g
 - [x] Aperture
 - [x] Exposure time
 - [x] ISO
+- [x] Exposure compensation
 - [x] Digital zoom
 - [x] Flash
 - [x] GPS
 - [x] Capture date
 - [ ] Dynamic metadata fields
 - [ ] Custom metadata templates
+- [ ] Metadata placeholders such as `{{camera}}`, `{{lens}}`, `{{iso}}`
 
-### Editor
+### 🎨 Editor
 
 - [x] Metadata strip
 - [x] Metadata field selection
@@ -77,12 +383,14 @@ The original photograph is always treated as the source. Edits are intended to g
 - [ ] Font customization
 - [ ] Text positioning
 - [ ] Text alignment
+- [ ] Text scaling
 - [ ] Logo / signature
-- [ ] Frames
+- [ ] Frame customization
 - [ ] Templates
 - [ ] Drag & drop elements
+- [ ] Multiple text elements
 
-### Export
+### 📤 Export
 
 - [ ] JPEG export
 - [ ] PNG export
@@ -91,8 +399,9 @@ The original photograph is always treated as the source. Edits are intended to g
 - [ ] Metadata preservation strategy
 - [ ] Export destination selection
 - [ ] Batch export
+- [ ] Original image protection during export
 
-### Advanced
+### 🔬 Advanced Photography
 
 - [ ] RAW / DNG support
 - [ ] XMP support
@@ -100,60 +409,141 @@ The original photograph is always treated as the source. Edits are intended to g
 - [ ] MakerNotes handling
 - [ ] Batch processing
 - [ ] Saved templates
+- [ ] Advanced metadata mapping
 
 ---
 
-## 🏗️ Architecture
+## 🔐 Non-Destructive Workflow
 
-Frameora follows a Clean Architecture + MVVM approach.
+One of the core principles of Frameora is protecting the original photograph.
+
+The intended workflow is:
 
 ```text
-com.jairoco.frameora
-│
-├── MainActivity.kt
-│
-├── domain
-│   │
-│   ├── metadata
-│   │   ├── ExifInspector.kt
-│   │   ├── ExifReader.kt
-│   │   └── MetadataFormatter.kt
-│   │
-│   ├── model
-│   │   └── PhotoMetadata.kt
-│   │
-│   └── editor
-│       │
-│       └── model
-│           ├── PhotoEdit.kt
-│           ├── FrameConfig.kt
-│           ├── TextElement.kt
-│           ├── LogoElement.kt
-│           ├── MetadataDisplayConfig.kt
-│           └── MetadataField.kt
-│
-└── ui
-    │
-    ├── components
-    │   ├── MetadataRow.kt
-    │   ├── MetadataSection.kt
-    │   └── PhotoPreview.kt
-    │
-    ├── editor
-    │   ├── EditorScreen.kt
-    │   ├── EditorPreview.kt
-    │   ├── EditorUiState.kt
-    │   ├── EditorViewModel.kt
-    │   └── MetadataFieldSwitch.kt
-    │
-    ├── screen
-    │   ├── FrameoraScreen.kt
-    │   ├── FrameoraUiState.kt
-    │   └── FrameoraViewModel.kt
-    │
-    └── theme
-        ├── Color.kt
-        ├── Theme.kt
-        └── Type.kt
-
+Original photograph
+        │
+        ▼
+   Read metadata
+        │
+        ▼
+ Configure editor
+        │
+        ▼
+ Render new image
+        │
+        ▼
+ Export new file
+        │
+        └──────► Original remains unchanged
 ```
+
+Frameora does not intend to overwrite the source photograph during the editing workflow.
+
+---
+
+## 🔄 Application Flow
+
+The current application flow is:
+
+```text
+Select photograph
+       │
+       ▼
+Read EXIF metadata
+       │
+       ▼
+Display photograph
+       │
+       ▼
+Open editor
+       │
+       ▼
+Select metadata fields
+       │
+       ▼
+Preview photographic information
+       │
+       ▼
+Export
+       │
+       ▼
+New photograph
+```
+
+The final export pipeline is still under development.
+
+---
+
+## 🧪 Development Status
+
+**Current version: `v0.1.0`**
+
+Frameora is currently in active development.
+
+The `v0.1.0` milestone establishes the foundation for:
+
+- EXIF metadata reading
+- Metadata formatting
+- Photograph preview
+- Editor state management
+- Metadata field configuration
+- Photographic metadata strip
+- Clean Architecture + MVVM foundation
+
+The export/rendering engine has not yet been implemented.
+
+---
+
+## 🚀 Getting Started
+
+### Requirements
+
+- Android Studio
+- Android SDK
+- JDK compatible with the project's Android Gradle Plugin
+- Android device or emulator
+
+### Clone the repository
+
+```bash
+git clone https://github.com/jairoCO10/frameora.git
+cd frameora
+```
+
+Open the project with Android Studio and allow Gradle to synchronize the project.
+
+Build and run the application on an Android device or emulator.
+
+---
+
+## 📌 Versioning
+
+Frameora follows **Semantic Versioning**:
+
+```text
+MAJOR.MINOR.PATCH
+```
+
+For example:
+
+```text
+1.2.3
+│ │ └── PATCH
+│ └──── MINOR
+└────── MAJOR
+```
+
+### Version meaning
+
+**MAJOR**
+
+Introduces incompatible changes to the application or project architecture.
+
+**MINOR**
+
+Introduces new functionality while maintaining compatibility.
+
+**PATCH**
+
+Contains bug fixes, small improvements or non-breaking changes.
+
