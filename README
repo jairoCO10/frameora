@@ -1,0 +1,159 @@
+# Frameora
+
+<p align="center">
+  <strong>Frameora</strong><br>
+  Android photo editor focused on EXIF metadata and customizable photographic overlays.
+</p>
+
+---
+
+## 📸 About
+
+Frameora is an Android application designed for photographers who want to enhance their photographs with useful photographic information without modifying the original file.
+
+The project focuses on combining **photography metadata**, **visual customization** and **high-quality export** in a simple workflow.
+
+The original photograph is always treated as the source. Edits are intended to generate a new file rather than overwrite the original.
+
+---
+
+## ✨ Current Features
+
+- 📷 Import photographs from the device
+- 🔍 Read EXIF metadata
+- 🖼️ Display the selected photograph
+- 🔄 Handle image orientation from EXIF
+- 📊 Display camera information
+- 🎛️ Select which metadata fields are displayed
+- 📐 Display focal length
+- 🔭 Display aperture
+- ⚡ Display shutter speed
+- 🎚️ Display ISO
+- 📅 Display capture date and time
+- 🔬 Display lens information
+- 📏 Display 35 mm equivalent focal length
+- 🔎 Display digital zoom
+- 💡 Display flash information
+- 📍 Display GPS coordinates
+- 🎨 Preview metadata below the photograph
+- 📱 Support portrait and landscape photographs
+
+---
+
+## 🚧 Roadmap
+
+### Photo
+
+- [x] Import photograph
+- [x] Photo preview
+- [x] EXIF orientation handling
+- [ ] Image transformations
+- [ ] Crop
+- [ ] Rotation
+
+### Metadata
+
+- [x] EXIF reader
+- [x] Camera manufacturer
+- [x] Camera model
+- [x] Lens information
+- [x] Focal length
+- [x] 35 mm equivalent
+- [x] Aperture
+- [x] Exposure time
+- [x] ISO
+- [x] Digital zoom
+- [x] Flash
+- [x] GPS
+- [x] Capture date
+- [ ] Dynamic metadata fields
+- [ ] Custom metadata templates
+
+### Editor
+
+- [x] Metadata strip
+- [x] Metadata field selection
+- [ ] Metadata style customization
+- [ ] Font customization
+- [ ] Text positioning
+- [ ] Text alignment
+- [ ] Logo / signature
+- [ ] Frames
+- [ ] Templates
+- [ ] Drag & drop elements
+
+### Export
+
+- [ ] JPEG export
+- [ ] PNG export
+- [ ] EXIF preservation
+- [ ] Image quality configuration
+- [ ] Metadata preservation strategy
+- [ ] Export destination selection
+- [ ] Batch export
+
+### Advanced
+
+- [ ] RAW / DNG support
+- [ ] XMP support
+- [ ] ICC profile handling
+- [ ] MakerNotes handling
+- [ ] Batch processing
+- [ ] Saved templates
+
+---
+
+## 🏗️ Architecture
+
+Frameora follows a Clean Architecture + MVVM approach.
+
+```text
+com.jairoco.frameora
+│
+├── MainActivity.kt
+│
+├── domain
+│   │
+│   ├── metadata
+│   │   ├── ExifInspector.kt
+│   │   ├── ExifReader.kt
+│   │   └── MetadataFormatter.kt
+│   │
+│   ├── model
+│   │   └── PhotoMetadata.kt
+│   │
+│   └── editor
+│       │
+│       └── model
+│           ├── PhotoEdit.kt
+│           ├── FrameConfig.kt
+│           ├── TextElement.kt
+│           ├── LogoElement.kt
+│           ├── MetadataDisplayConfig.kt
+│           └── MetadataField.kt
+│
+└── ui
+    │
+    ├── components
+    │   ├── MetadataRow.kt
+    │   ├── MetadataSection.kt
+    │   └── PhotoPreview.kt
+    │
+    ├── editor
+    │   ├── EditorScreen.kt
+    │   ├── EditorPreview.kt
+    │   ├── EditorUiState.kt
+    │   ├── EditorViewModel.kt
+    │   └── MetadataFieldSwitch.kt
+    │
+    ├── screen
+    │   ├── FrameoraScreen.kt
+    │   ├── FrameoraUiState.kt
+    │   └── FrameoraViewModel.kt
+    │
+    └── theme
+        ├── Color.kt
+        ├── Theme.kt
+        └── Type.kt
+
+```
