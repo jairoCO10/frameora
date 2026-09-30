@@ -58,6 +58,7 @@ dependencies {
 
     implementation(libs.androidx.exifinterface)
     implementation(libs.io.coil.compose)
+    implementation("io.coil-kt.coil3:coil-svg:3.6.3")
 
     testImplementation(libs.junit)
 

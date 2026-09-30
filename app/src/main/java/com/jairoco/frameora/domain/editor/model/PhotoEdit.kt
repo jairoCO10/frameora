@@ -4,5 +4,6 @@ data class PhotoEdit(
     val frame: FrameConfig? = null,
     val texts: List<TextElement> = emptyList(),
     val logo: LogoElement? = null,
-    val metadata: MetadataDisplayConfig = MetadataDisplayConfig()
+    val metadata: MetadataDisplayConfig = MetadataDisplayConfig(),
+    val metadataStyle: MetadataStyle = MetadataStyle()
 )

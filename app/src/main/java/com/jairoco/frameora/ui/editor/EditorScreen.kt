@@ -79,6 +79,7 @@ fun EditorScreen(
                 texts = state.edit.texts,
                 metadata = state.metadata,
                 metadataConfig = state.edit.metadata,
+                style = state.edit.metadataStyle,
                 modifier = Modifier.fillMaxWidth()
             )
         }

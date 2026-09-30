@@ -32,13 +32,13 @@ class EditorViewModel(
         )
     }
     fun addText(text: String) {
-
         val currentTexts = _uiState.value.edit.texts
 
         val newText = TextElement(
+            id = java.util.UUID.randomUUID().toString(),
             text = text,
-            x = 40f,
-            y = 40f,
+            x = 0.5f,
+            y = 0.5f,
             fontSize = 32f
         )
 

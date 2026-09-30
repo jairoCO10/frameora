@@ -2,15 +2,14 @@ package com.jairoco.frameora.ui.editor
 
 import android.net.Uri
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -22,10 +21,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.jairoco.frameora.domain.editor.model.FrameConfig
+import com.jairoco.frameora.domain.editor.model.MetadataDisplayConfig
+import com.jairoco.frameora.domain.editor.model.MetadataStyle
 import com.jairoco.frameora.domain.editor.model.TextElement
 import com.jairoco.frameora.domain.metadata.MetadataFormatter
 import com.jairoco.frameora.domain.model.PhotoMetadata
-import com.jairoco.frameora.domain.editor.model.MetadataDisplayConfig
+
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.ui.Alignment
+import com.jairoco.frameora.ui.components.BrandLogo
+import com.jairoco.frameora.domain.brand.BrandResolver
+
+import com.jairoco.frameora.domain.brand.CameraBrand
+
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+
 
 @Composable
 fun EditorPreview(
@@ -33,10 +46,10 @@ fun EditorPreview(
     frame: FrameConfig?,
     texts: List<TextElement> = emptyList(),
     metadata: PhotoMetadata? = null,
-    modifier: Modifier = Modifier,
     metadataConfig: MetadataDisplayConfig = MetadataDisplayConfig(),
+    style: MetadataStyle = MetadataStyle(),
+    modifier: Modifier = Modifier
 ) {
-
     val aspectRatio =
         if (
             metadata?.width != null &&
@@ -60,23 +73,16 @@ fun EditorPreview(
             } else {
                 width / height
             }
-
         } else {
             1f
         }
 
-    Column(
-        modifier = modifier.fillMaxWidth()
-    ) {
+    Column( modifier = modifier.fillMaxWidth() ) {
 
         /*
-         * FOTO
+         * FOTO + ELEMENTOS
          */
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .aspectRatio(aspectRatio)
-        ) {
+        BoxWithConstraints(modifier = Modifier.fillMaxWidth().aspectRatio(aspectRatio) ) {
 
             AsyncImage(
                 model = uri,
@@ -84,6 +90,33 @@ fun EditorPreview(
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Fit
             )
+//            BrandLogo(
+//                brand = BrandResolver.resolve(metadata?.make),
+//                modifier = Modifier
+//            )
+
+            texts.forEach { textElement ->
+
+                val x = textElement.x.coerceIn(0f, 1f)
+                val y = textElement.y.coerceIn(0f, 1f)
+
+                Text(
+                    text = textElement.text,
+                    fontSize = textElement.fontSize.sp,
+                    fontWeight = if (textElement.bold) {
+                        FontWeight.Bold
+                    } else {
+                        FontWeight.Normal
+                    },
+                    color = Color.White,
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .offset(
+                            x = maxWidth * (x - 0.5f),
+                            y = maxHeight * (y - 0.5f)
+                        )
+                )
+            }
         }
 
         /*
@@ -91,32 +124,38 @@ fun EditorPreview(
          */
         MetadataBar(
             metadata = metadata,
-            config = metadataConfig
+            config = metadataConfig,
+            style = style,
+            brand = BrandResolver.resolve(metadata?.make)
         )
     }
 }
 
-
 @Composable
 private fun MetadataBar(
     metadata: PhotoMetadata?,
-    config: MetadataDisplayConfig
-) {
+    config: MetadataDisplayConfig,
+    style: MetadataStyle,
+    brand: CameraBrand?
+){
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .background(Color.White)
+            .background(style.backgroundColor)
             .padding(
-                horizontal = 24.dp,
-                vertical = 16.dp
+                horizontal = style.horizontalPadding.dp,
+                vertical = style.verticalPadding.dp
             )
     ) {
 
+        /*
+         * Sin metadata
+         */
         if (metadata == null) {
             Text(
                 text = "Sin información EXIF",
-                fontSize = 14.sp,
-                color = Color.Gray
+                fontSize = style.secondarySize.sp,
+                color = style.secondaryTextColor
             )
             return
         }
@@ -124,34 +163,84 @@ private fun MetadataBar(
         /*
          * Fabricante
          */
-        if (config.showMake) {
-            metadata.make
-                ?.takeIf { it.isNotBlank() }
-                ?.let { make ->
-
-                    Text(
-                        text = make.uppercase(),
-                        fontSize = 17.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Black
-                    )
-                }
-        }
+//        if (config.showMake) {
+//            metadata.make
+//                ?.takeIf { it.isNotBlank() }
+//                ?.let { make ->
+//                    Text(
+//                        text = make.uppercase(),
+//                        fontSize = style.manufacturerSize.sp,
+//                        fontWeight = FontWeight.Bold,
+//                        color = style.primaryTextColor
+//                    )
+//                }
+//        }
 
         /*
          * Modelo
          */
-        if (config.showModel) {
-            metadata.model
-                ?.takeIf { it.isNotBlank() }
-                ?.let { model ->
+//        if (config.showModel) {
+//            metadata.model
+//                ?.takeIf { it.isNotBlank() }
+//                ?.let { model ->
+//                    Text(
+//                        text = model,
+//                        fontSize = style.modelSize.sp,
+//                        color = style.secondaryTextColor
+//                    )
+//                }
+//        }
+
+        /*
+ * Marca + modelo
+ */
+        if (config.showMake || config.showModel) {
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+
+                if (config.showMake && brand != null) {
+
+                    BrandLogo(
+                        brand = brand,
+                        modifier = Modifier.size(48.dp)
+                    )
+
+                    Spacer(
+                        modifier = Modifier.width(12.dp)
+                    )
+                } else if (
+                    config.showMake &&
+                    metadata.make?.isNotBlank() == true
+                ) {
 
                     Text(
-                        text = model,
-                        fontSize = 14.sp,
-                        color = Color.DarkGray
+                        text = metadata.make.uppercase(),
+                        fontSize = style.manufacturerSize.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = style.primaryTextColor
+                    )
+
+                    Spacer(
+                        modifier = Modifier.width(12.dp)
                     )
                 }
+
+                if (config.showModel) {
+
+                    metadata.model
+                        ?.takeIf { it.isNotBlank() }
+                        ?.let { model ->
+
+                            Text(
+                                text = model,
+                                fontSize = style.modelSize.sp,
+                                color = style.secondaryTextColor
+                            )
+                        }
+                }
+            }
         }
 
         /*
@@ -203,8 +292,8 @@ private fun MetadataBar(
 
             Text(
                 text = photographicData.joinToString("  ·  "),
-                fontSize = 14.sp,
-                color = Color.Black
+                fontSize = style.metadataSize.sp,
+                color = style.primaryTextColor
             )
         }
 
@@ -230,8 +319,8 @@ private fun MetadataBar(
 
                 Text(
                     text = lens,
-                    fontSize = 13.sp,
-                    color = Color.DarkGray
+                    fontSize = style.secondarySize.sp,
+                    color = style.secondaryTextColor
                 )
             }
         }
@@ -250,8 +339,8 @@ private fun MetadataBar(
 
                     Text(
                         text = "Equiv. 35 mm: ${focal35} mm",
-                        fontSize = 13.sp,
-                        color = Color.DarkGray
+                        fontSize = style.secondarySize.sp,
+                        color = style.secondaryTextColor
                     )
                 }
         }
@@ -274,8 +363,8 @@ private fun MetadataBar(
 
                 Text(
                     text = "Zoom digital: $zoom",
-                    fontSize = 13.sp,
-                    color = Color.DarkGray
+                    fontSize = style.secondarySize.sp,
+                    color = style.secondaryTextColor
                 )
             }
         }
@@ -298,8 +387,8 @@ private fun MetadataBar(
 
                 Text(
                     text = "Flash: $flash",
-                    fontSize = 13.sp,
-                    color = Color.DarkGray
+                    fontSize = style.secondarySize.sp,
+                    color = style.secondaryTextColor
                 )
             }
         }
@@ -323,8 +412,8 @@ private fun MetadataBar(
 
                 Text(
                     text = "GPS: $gps",
-                    fontSize = 13.sp,
-                    color = Color.DarkGray
+                    fontSize = style.secondarySize.sp,
+                    color = style.secondaryTextColor
                 )
             }
         }
@@ -344,8 +433,8 @@ private fun MetadataBar(
 
                     Text(
                         text = formatDisplayDate(date),
-                        fontSize = 13.sp,
-                        color = Color.Gray
+                        fontSize = style.secondarySize.sp,
+                        color = style.dateTextColor
                     )
                 }
         }
